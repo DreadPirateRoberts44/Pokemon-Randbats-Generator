@@ -89,17 +89,7 @@ function App() {
 
     const tera = setForMon["roles"][role]["teraTypes"][teraIndex];
 
-    var evs = "";
-
-    var ivs = "";
-
-    for (var ev in setForMon["roles"][role]["evs"]) {
-      evs += setForMon["roles"][role]["evs"][ev] + " " + ev + " /";
-    }
-
-    for (var iv in setForMon["roles"][role]["ivs"]) {
-      ivs += setForMon["roles"][role]["ivs"][iv] + " " + iv + " /";
-    }
+    const evs = "EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe"; // evs are always 84 across the board
 
     var moves = setForMon["roles"][role]["moves"];
 
@@ -114,6 +104,8 @@ function App() {
     pokemonString += "Level: " + level + "  \n";
 
     pokemonString += "Tera Type: " + tera + "  \n";
+
+    pokemonString += evs + "\n";
 
     var i = 0;
 
