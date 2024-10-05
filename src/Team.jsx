@@ -21,6 +21,17 @@ function Team() {
     const fetchData = async () => {
       try {
         const pokemon = await LoadingUtility.getAllRandBatSets();
+
+        /**
+         * TODO
+         * Make this data array sorted alphabetically
+         * The way databases are added across gens, the added mons are out of order
+         * It's not terrible since there's search enabled, but I did think mons were missing
+         * (I kept checking for alakazam without typing)
+         * Additionally, and likely at the same time, this is probably better taken from PokeAPI,
+         * or someother similar source (including just having a list in the project)
+         * if the future vision is to allow users to select unevolved mons and map them to the evolved form
+         */
         var data = [];
         for (var mon in await pokemon) {
           data.push({

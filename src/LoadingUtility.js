@@ -1,11 +1,32 @@
+/**
+ * Fetch and combine the gen 7-9 randbat sets to serve as the database for this tool
+ * This is essentially at nat dex, though most unevolved pokemon are excluded
+ *
+ * @returns A JSON object that has the randbats sets for all pokemon with a randbat set
+ *
+ * TODO download the json files and reference them locally, at least for testing and development.
+ *      it will be faster, and I'm paranoid if we run this enough people might get annoyed at us
+ * TODO this function could likely be made much more performant (not that it's noticeably slow)
+ *      since there's a known amount of dexited mons, and which database to pull them from
+ *      we shouldn't need to loop over every possible entry and check
+ */
 export async function getAllRandBatSets() {
   const gen9Mons = await (
     await fetch("https://pkmn.github.io/randbats/data/gen9randombattle.json")
   ).json();
+  const gen8Mons = await (
+    await fetch("https://pkmn.github.io/randbats/data/gen8randombattle.json")
+  ).json();
   const gen7Mons = await (
     await fetch("https://pkmn.github.io/randbats/data/gen7randombattle.json")
   ).json();
-  for (var mon in gen7Mons) {
+  for (const mon in gen8Mons) {
+    if (!gen9Mons.hasOwnProperty(mon)) {
+      gen9Mons[mon] = gen8Mons[mon];
+      gen9Mons[mon]["gen"] = 8;
+    }
+  }
+  for (const mon in gen7Mons) {
     if (!gen9Mons.hasOwnProperty(mon)) {
       gen9Mons[mon] = gen7Mons[mon];
       gen9Mons[mon]["gen"] = 7;
@@ -28,7 +49,7 @@ export async function getAllRandBatSets() {
  *          relevant move set, a relevant tera, and most important for balancing
  *          the level it uses in randbats.
  *
- * TODO - set tera for mons prior to gen 9
+ * TODO - set tera for mons prior to gen 9 smarter than just saying steel as a generally good type
  * TODO - increase the intelligence of move/item/ability selection
  *        ex: Ampharos can run specs or life orb, and one it's relevant moves is agility
  *            currently no check takes place to ensure it's not specs agility ampharos
@@ -36,36 +57,50 @@ export async function getAllRandBatSets() {
  *        to check the actual data structure and not generation (in case this changes either in existing
  *        generations or in future generations)
  * TODO - get IVs. They only matter for confusion and foul play, so pretty niche
+ * TODO - potentially clean up the special handling of gen 8 - overall it's not that bad
  */
 export function generateMon(name, setForMon, generation) {
-  const roleIndex = getRandomInt(Object.keys(setForMon["roles"]).length);
+  let role;
+  if (generation !== 8) {
+    const roleIndex = getRandomInt(Object.keys(setForMon["roles"]).length);
 
-  const role = Object.keys(setForMon["roles"])[roleIndex];
+    role = Object.keys(setForMon["roles"])[roleIndex];
+  }
 
   const level = setForMon["level"];
 
-  const abilityIndex = getRandomInt(
-    setForMon["roles"][role]["abilities"].length
-  );
+  const abilityIndex =
+    generation === 8
+      ? getRandomInt(setForMon["abilities"].length)
+      : getRandomInt(setForMon["roles"][role]["abilities"].length);
 
-  const ability = setForMon["roles"][role]["abilities"][abilityIndex];
+  const ability =
+    generation === 8
+      ? setForMon["abilities"][abilityIndex]
+      : setForMon["roles"][role]["abilities"][abilityIndex];
 
-  const itemIndex = getRandomInt(setForMon["roles"][role]["items"].length);
+  const itemIndex =
+    generation === 8
+      ? getRandomInt(setForMon["items"].length)
+      : getRandomInt(setForMon["roles"][role]["items"].length);
 
-  const item = setForMon["roles"][role]["items"][itemIndex];
+  const item =
+    generation === 8
+      ? setForMon["items"][itemIndex]
+      : setForMon["roles"][role]["items"][itemIndex];
 
-  var tera;
+  let tera;
   if (generation === 9) {
     const teraIndex = getRandomInt(
       setForMon["roles"][role]["teraTypes"].length
     );
-
     tera = setForMon["roles"][role]["teraTypes"][teraIndex];
   } else {
-    tera = "Steel";
+    tera = "Steel"; // todo improve this logic
   }
 
-  var moves = setForMon["roles"][role]["moves"];
+  let moves =
+    generation === 8 ? setForMon["moves"] : setForMon["roles"][role]["moves"];
 
   while (moves.length > 4) {
     moves.splice(getRandomInt(moves.length), 1);
