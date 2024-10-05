@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 
 import MonSelect from "./MonSelect.js";
 
-function App() {
+import * as LoadingUtility from "./LoadingUtility.js";
+
+function Team() {
   const [options, setOptions] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [selectedMons, setSelectedMons] = useState([]);
+  const [selectedMons] = useState([]);
 
   const [pokemonData, setPokemonData] = useState();
 
@@ -19,7 +21,7 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://pkmn.github.io/randbats/data/gen9randombattle.json"
+          "https://pkmn.github.io/randbats/data/gen7randombattle.json"
         );
 
         const pokemon = response.json();
@@ -27,11 +29,11 @@ function App() {
         var data = [];
 
         for (var i in await pokemon) {
-          data.push({ value: i, label: i });
+          data.push({ value: i, label: i, generation: 8 });
         }
 
         setPokemonData(await pokemon);
-
+        console.log(await pokemon);
         setOptions(data);
 
         setIsLoading(false);
@@ -53,75 +55,13 @@ function App() {
     var teamString = "";
 
     for (var child in selectedMons) {
-      teamString += generateMon(
+      teamString += LoadingUtility.generateMon(
         selectedMons[child],
         pokemonData[selectedMons[child]]
       );
     }
 
     setTeamImport(teamString);
-  }
-
-  function generateMon(name, setForMon) {
-    console.log(setForMon);
-
-    var pokemonString = name + " @ ";
-
-    const roleIndex = getRandomInt(Object.keys(setForMon["roles"]).length);
-
-    const role = Object.keys(setForMon["roles"])[roleIndex];
-
-    const level = setForMon["level"];
-
-    const abilityIndex = getRandomInt(
-      setForMon["roles"][role]["abilities"].length
-    );
-
-    const ability = setForMon["roles"][role]["abilities"][abilityIndex];
-
-    const itemIndex = getRandomInt(setForMon["roles"][role]["items"].length);
-
-    const item = setForMon["roles"][role]["items"][itemIndex];
-
-    const teraIndex = getRandomInt(
-      setForMon["roles"][role]["teraTypes"].length
-    );
-
-    const tera = setForMon["roles"][role]["teraTypes"][teraIndex];
-
-    const evs = "EVs: 84 HP / 84 Atk / 84 Def / 84 SpA / 84 SpD / 84 Spe"; // evs are always 84 across the board
-
-    var moves = setForMon["roles"][role]["moves"];
-
-    while (moves.length > 4) {
-      moves.splice(getRandomInt(moves.length), 1);
-    }
-
-    pokemonString += item + "  \n";
-
-    pokemonString += "Ability: " + ability + "  \n";
-
-    pokemonString += "Level: " + level + "  \n";
-
-    pokemonString += "Tera Type: " + tera + "  \n";
-
-    pokemonString += evs + "\n";
-
-    var i = 0;
-
-    while (i < moves.length) {
-      pokemonString += "- " + moves[i] + "  \n";
-
-      i++;
-    }
-
-    pokemonString += "\n";
-
-    return pokemonString;
-  }
-
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
   }
 
   return (
@@ -177,4 +117,4 @@ function App() {
   );
 }
 
-export default App;
+export default Team;
