@@ -1,3 +1,19 @@
+export async function getAllRandBatSets() {
+  const gen9Mons = await (
+    await fetch("https://pkmn.github.io/randbats/data/gen9randombattle.json")
+  ).json();
+  const gen7Mons = await (
+    await fetch("https://pkmn.github.io/randbats/data/gen7randombattle.json")
+  ).json();
+  for (var mon in gen7Mons) {
+    if (!gen9Mons.hasOwnProperty(mon)) {
+      gen9Mons[mon] = gen7Mons[mon];
+      gen9Mons[mon]["gen"] = 7;
+    }
+  }
+  return gen9Mons;
+}
+
 /**
  * Returns a Pokemon Showdown friendly import string for a given pokemon
  * based on random possible attributes based on randombats sets
@@ -22,8 +38,6 @@
  * TODO - get IVs. They only matter for confusion and foul play, so pretty niche
  */
 export function generateMon(name, setForMon, generation) {
-  console.log(setForMon);
-
   const roleIndex = getRandomInt(Object.keys(setForMon["roles"]).length);
 
   const role = Object.keys(setForMon["roles"])[roleIndex];

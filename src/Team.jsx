@@ -20,20 +20,17 @@ function Team() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://pkmn.github.io/randbats/data/gen7randombattle.json"
-        );
-
-        const pokemon = response.json();
-
+        const pokemon = await LoadingUtility.getAllRandBatSets();
         var data = [];
-
-        for (var i in await pokemon) {
-          data.push({ value: i, label: i, generation: 8 });
+        for (var mon in await pokemon) {
+          data.push({
+            value: mon,
+            label: mon,
+            generation:
+              pokemon[mon]["gen"] === undefined ? 9 : pokemon[mon]["gen"],
+          });
         }
-
         setPokemonData(await pokemon);
-        console.log(await pokemon);
         setOptions(data);
 
         setIsLoading(false);
@@ -48,7 +45,7 @@ function Team() {
   }, []);
 
   function updateSelectedOptionForChild(selectedPokemon, key) {
-    selectedMons[key] = selectedPokemon.value;
+    selectedMons[key] = selectedPokemon;
   }
 
   function generateTeam() {
@@ -56,8 +53,9 @@ function Team() {
 
     for (var child in selectedMons) {
       teamString += LoadingUtility.generateMon(
-        selectedMons[child],
-        pokemonData[selectedMons[child]]
+        selectedMons[child].value,
+        pokemonData[selectedMons[child].value],
+        selectedMons[child].generation
       );
     }
 
@@ -107,7 +105,7 @@ function Team() {
           />
         </div>
       )}
-
+      {/* TODO add the link for the teambuilder to streamline the process https://play.pokemonshowdown.com/teambuilder */}
       <button type="button" onClick={generateTeam}>
         Generate Team
       </button>
