@@ -94,7 +94,7 @@ function generateMoves(setForMon, generation, role) {
  * TODO - increase the intelligence of move/item/ability selection
  * @param setForMon - the set for the given pokemon
  * @param generation - the generation for the given pokemon
- * @param role the pokemons role if it has one
+ * @param role the pokemons role if it has one. Generation 8 does not include role in the heirarchy
  * @returns one of pokemon's ability
  */
 function generateAbility(setForMon, generation, role) {
