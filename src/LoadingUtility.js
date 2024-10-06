@@ -48,11 +48,6 @@ export async function getAllRandBatSets() {
  *          84 evs in every stat, no ivs, no nature, 4 moves chosen at random from their
  *          relevant move set, a relevant tera, and most important for balancing
  *          the level it uses in randbats.
- *
- * TODO - set tera for mons prior to gen 9 smarter than just saying steel as a generally good type
- * TODO - increase the intelligence of move/item/ability selection
- *        ex: Ampharos can run specs or life orb, and one it's relevant moves is agility
- *            currently no check takes place to ensure it's not specs agility ampharos
  * TODO - potentially update both here and the data generation for initial load
  *        to check the actual data structure and not generation (in case this changes either in existing
  *        generations or in future generations)
@@ -66,9 +61,43 @@ export function generateMon(name, setForMon, generation) {
 
     role = Object.keys(setForMon["roles"])[roleIndex];
   }
-
   const level = setForMon["level"];
+  const ability = generateAbility(setForMon, generation, role);
+  const item = generateItem(setForMon, generation, role);
+  const tera = generateTera(setForMon, generation, role);
+  const moves = generateMoves(setForMon, generation, role);
 
+  return generateStringForMon(name, item, ability, level, tera, moves);
+}
+
+/**
+ * Generate a move set for the given pokemon out of it's competively viable randbat move options
+ * TODO - make this have some intelligence (ex no choice specs agility ampharos)
+ * @param setForMon - the set for the given pokemon
+ * @param generation - the generation for the given pokemon
+ * @param role the pokemons role if it has one
+ * @returns a set of competitively viable moves for the given pokemon
+ */
+function generateMoves(setForMon, generation, role) {
+  let moves =
+    generation === 8 ? setForMon["moves"] : setForMon["roles"][role]["moves"];
+
+  while (moves.length > 4) {
+    moves.splice(getRandomInt(moves.length), 1);
+  }
+
+  return moves;
+}
+
+/**
+ * Generate an ability for the given pokemon
+ * TODO - increase the intelligence of move/item/ability selection
+ * @param setForMon - the set for the given pokemon
+ * @param generation - the generation for the given pokemon
+ * @param role the pokemons role if it has one
+ * @returns one of pokemon's ability
+ */
+function generateAbility(setForMon, generation, role) {
   const abilityIndex =
     generation === 8
       ? getRandomInt(setForMon["abilities"].length)
@@ -79,6 +108,38 @@ export function generateMon(name, setForMon, generation) {
       ? setForMon["abilities"][abilityIndex]
       : setForMon["roles"][role]["abilities"][abilityIndex];
 
+  return ability;
+}
+
+/**
+ * Determine the tera type for the given pokemon
+ * TODO make this smarter for non gen 9 pokemon
+ * @param setForMon - the set for the given pokemon, only
+ * @param generation - the generation for the given pokemon, determines how to calculate the tera
+ *                     gen 9 has them in the data set. gen 7 and 8 need to determine off of some other logic
+ * @param role - only matters for gen 9 since the others don't have it in the database, used as index
+ * @returns
+ */
+function generateTera(setForMon, generation, role) {
+  if (generation === 9) {
+    const teraIndex = getRandomInt(
+      setForMon["roles"][role]["teraTypes"].length
+    );
+    return setForMon["roles"][role]["teraTypes"][teraIndex];
+  } else {
+    return "Steel"; // todo improve this logic
+  }
+}
+
+/**
+ * Generate an item for the given pokemon
+ * TODO - increase the intelligence of move/item/ability selection
+ * @param setForMon - the set for the given pokemon
+ * @param generation - the generation for the given pokemon
+ * @param role the pokemons role if it has one
+ * @returns one of pokemon's items
+ */
+function generateItem(setForMon, generation, role) {
   const itemIndex =
     generation === 8
       ? getRandomInt(setForMon["items"].length)
@@ -89,23 +150,7 @@ export function generateMon(name, setForMon, generation) {
       ? setForMon["items"][itemIndex]
       : setForMon["roles"][role]["items"][itemIndex];
 
-  let tera;
-  if (generation === 9) {
-    const teraIndex = getRandomInt(
-      setForMon["roles"][role]["teraTypes"].length
-    );
-    tera = setForMon["roles"][role]["teraTypes"][teraIndex];
-  } else {
-    tera = "Steel"; // todo improve this logic
-  }
-
-  let moves =
-    generation === 8 ? setForMon["moves"] : setForMon["roles"][role]["moves"];
-
-  while (moves.length > 4) {
-    moves.splice(getRandomInt(moves.length), 1);
-  }
-  return generateStringForMon(name, item, ability, level, tera, moves);
+  return item;
 }
 
 /**
