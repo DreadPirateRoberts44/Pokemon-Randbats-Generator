@@ -1,0 +1,9 @@
+#
+# pattern:
+#
+# file/directory       user
+#
+# As I am currently the only one on the project
+# And unsure of what size this will grow to
+# I am going to make myself the sole code owner
+*       @DreadPirateRoberts44
