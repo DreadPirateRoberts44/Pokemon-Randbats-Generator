@@ -1,3 +1,6 @@
+import gen9Data from "./database/gen9randombattle.json";
+import gen8Data from "./database/gen8randombattle.json";
+import gen7Data from "./database/gen7randombattle.json";
 /**
  * Fetch and combine the gen 7-9 randbat sets to serve as the database for this tool
  * This is essentially at nat dex, though most unevolved pokemon are excluded
@@ -11,28 +14,62 @@
  *      we shouldn't need to loop over every possible entry and check
  */
 export async function getAllRandBatSets() {
-  const gen9Mons = await (
-    await fetch("https://pkmn.github.io/randbats/data/gen9randombattle.json")
-  ).json();
-  const gen8Mons = await (
-    await fetch("https://pkmn.github.io/randbats/data/gen8randombattle.json")
-  ).json();
-  const gen7Mons = await (
-    await fetch("https://pkmn.github.io/randbats/data/gen7randombattle.json")
-  ).json();
-  for (const mon in gen8Mons) {
-    if (!gen9Mons.hasOwnProperty(mon)) {
-      gen9Mons[mon] = gen8Mons[mon];
-      gen9Mons[mon]["gen"] = 8;
-    }
-  }
-  for (const mon in gen7Mons) {
-    if (!gen9Mons.hasOwnProperty(mon)) {
-      gen9Mons[mon] = gen7Mons[mon];
-      gen9Mons[mon]["gen"] = 7;
-    }
-  }
+  //get each generation as a json object
+  const gen9Mons = await getGenerationalData(9, true); // as the most recent generation serves as the aggregate set
+  const gen8Mons = await getGenerationalData(8, false);
+  const gen7Mons = await getGenerationalData(7, false);
+  //compile dexited mons into gen 9 - this is required due to lack of natdex randbats
+  mergeGenData(gen9Mons, gen8Mons, 8);
+  mergeGenData(gen9Mons, gen7Mons, 7);
   return gen9Mons;
+}
+
+/**
+ * Merge mainPokemonSet and addOnPokemonSet such that mainPokemonSet becomes the result of
+ * mainPokemonSet union* addOnPokemonSet
+ * union in terms of pokemon, not the respective pokemon attributes (for example, if a mon that exists in gen 9
+ * has a z move in gen 7 it will not count as a distinct entry)
+ * In addition, any pokemon coming from the union will have the generation of the addOnPokemonSet added as an attribute
+ * in order to inform the structure of the json object they were loaded with
+ *
+ * @param mainPokemonSet a set of pokemon that will have the addOnPokemon added to it's set
+ * @param addOnPokemon the set of pokemon to add into the mainPokemon set
+ * @param generation the generation of the addOnPokemon dataset
+ */
+function mergeGenData(mainPokemonSet, addOnPokemon, generation) {
+  for (const mon in addOnPokemon) {
+    if (!mainPokemonSet.hasOwnProperty(mon)) {
+      mainPokemonSet[mon] = addOnPokemon[mon];
+      mainPokemonSet[mon]["gen"] = generation;
+    }
+  }
+}
+
+/**
+ * Load json object for the given generation
+ * @param generation the generation to load the data for
+ * @param useLocal true if we should use the local copy otherwise fetch the online data
+ * @returns the json object representing the given generation
+ * TODO - look into the best way to not include non dexited pokemon in earlier gen data sets
+ */
+async function getGenerationalData(generation, useLocal) {
+  if (useLocal) {
+    if (generation === 9) {
+      return gen9Data;
+    } else if (generation === 8) {
+      return gen8Data;
+    } else if (generation === 7) {
+      return gen7Data;
+    } else {
+      throw new Error("Unexpected generation");
+    }
+  } else {
+    const url =
+      "https://pkmn.github.io/randbats/data/gen" +
+      generation +
+      "randombattle.json";
+    return await (await fetch(url)).json();
+  }
 }
 
 /**
