@@ -1,6 +1,7 @@
 import gen9Data from "./database/gen9randombattle.json";
 import gen8Data from "./database/gen8randombattle.json";
 import gen7Data from "./database/gen7randombattle.json";
+
 /**
  * Fetch and combine the gen 7-9 randbat sets to serve as the database for this tool
  * This is essentially at nat dex, though most unevolved pokemon are excluded
@@ -16,8 +17,8 @@ import gen7Data from "./database/gen7randombattle.json";
 export async function getAllRandBatSets() {
   //get each generation as a json object
   const gen9Mons = await getGenerationalData(9, true); // as the most recent generation serves as the aggregate set
-  const gen8Mons = await getGenerationalData(8, false);
-  const gen7Mons = await getGenerationalData(7, false);
+  const gen8Mons = await getGenerationalData(8, true);
+  const gen7Mons = await getGenerationalData(7, true);
   //compile dexited mons into gen 9 - this is required due to lack of natdex randbats
   mergeGenData(gen9Mons, gen8Mons, 8);
   mergeGenData(gen9Mons, gen7Mons, 7);
@@ -101,6 +102,7 @@ export function generateMon(name, setForMon, generation) {
   const level = setForMon["level"];
   const ability = generateAbility(setForMon, generation, role);
   const item = generateItem(setForMon, generation, role);
+  console.log(`ITEM: ${typeof(item)}`);
   const tera = generateTera(setForMon, generation, role);
   const moves = generateMoves(setForMon, generation, role);
 
@@ -177,6 +179,18 @@ function generateTera(setForMon, generation, role) {
  * @returns one of pokemon's items
  */
 function generateItem(setForMon, generation, role) {
+
+	// Check if the pokemon from each generation run an item from the json
+  if(generation === 8) {
+    if(!setForMon["items"]) {
+			return '';
+    }
+  } else {
+		if(!setForMon["roles"][role]["items"]){
+			return '';
+		}
+  }
+
   const itemIndex =
     generation === 8
       ? getRandomInt(setForMon["items"].length)
