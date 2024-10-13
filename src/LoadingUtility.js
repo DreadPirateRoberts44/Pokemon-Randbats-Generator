@@ -102,7 +102,6 @@ export function generateMon(name, setForMon, generation) {
   const level = setForMon["level"];
   const ability = generateAbility(setForMon, generation, role);
   const item = generateItem(setForMon, generation, role);
-  console.log(`ITEM: ${typeof(item)}`);
   const tera = generateTera(setForMon, generation, role);
   const moves = generateMoves(setForMon, generation, role);
 
