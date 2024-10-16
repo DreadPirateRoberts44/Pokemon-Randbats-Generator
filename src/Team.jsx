@@ -71,6 +71,7 @@ function Team() {
     }
 
     setTeamImport(teamString);
+    navigator.clipboard.writeText(teamString); //copy team string to clipboard
   }
 
   return (
@@ -117,11 +118,13 @@ function Team() {
         </div>
       )}
       {/* TODO add the link for the teambuilder to streamline the process https://play.pokemonshowdown.com/teambuilder */}
-      <button type="button" onClick={generateTeam}>
-        Generate Team
-      </button>
+      <div class="center">
+        <button type="button" onClick={generateTeam}>
+          Generate Team
+        </button>
+      </div>
 
-      <p style={{ whiteSpace: "pre-wrap" }}>{teamImport}</p>
+      <p class="import-text" style={{ whiteSpace: "pre-wrap" }}>{teamImport}</p>
     </div>
   );
 }
