@@ -9,5 +9,56 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    monospace;  
+}
+
+/* CSS classes */
+
+.image-dropdown-container {
+  border: cyan dotted 2px;
+  margin: 0 auto;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mon-dropdown {
+  border: red solid 10px;
+  padding: 10px;
+  margin: 20px;
+  top: 20px;
+}
+.mon-image {
+  width: 64px;
+  height: 64px; 
+  margin: auto;
+  padding: 10px;
+}
+
+/* CSS ID's */
+
+#mon-search {
+  border: red solid 2px;
+  margin: 0 auto;
+  width: 50%;
+  padding: 40px;
+
+
+}
+
+#gen-team-btn {
+  margin: 0 auto;
+  padding: 5px 0px 20px;
+  width: 50%;
+  text-align: center;
+}
+
+#team-text {
+  border: magenta solid 2px;
+  margin: 0 auto;
+  width: 50%;
+  padding: 20px 20px 40px;
 }
