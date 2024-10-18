@@ -3,6 +3,7 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 
 import MonSelect from "./MonSelect.js";
+import MonSelectWithImage from "./MonSelectWithImage.js";
 
 import * as LoadingUtility from "./LoadingUtility.js";
 
@@ -79,38 +80,39 @@ function Team() {
       {isLoading && <p>Loading...</p>}
 
       {!isLoading && (
-        <div>
-          <MonSelect
+        <div id="mon-search">
+          
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child1"}
-          />
+          />         
 
-          <MonSelect
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child2"}
           />
-
-          <MonSelect
+          
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child3"}
           />
-
-          <MonSelect
+          
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child4"}
           />
-
-          <MonSelect
+          
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child5"}
           />
-
-          <MonSelect
+          
+          <MonSelectWithImage
             options={options}
             updateSelectedOptionForChild={updateSelectedOptionForChild}
             childIndex={"child6"}
@@ -118,13 +120,13 @@ function Team() {
         </div>
       )}
       {/* TODO add the link for the teambuilder to streamline the process https://play.pokemonshowdown.com/teambuilder */}
-      <div class="center">
+      <div id="gen-team-btn">
         <button type="button" onClick={generateTeam}>
           Generate Team
         </button>
       </div>
-
-      <p class="import-text" style={{ whiteSpace: "pre-wrap" }}>{teamImport}</p>
+      
+      <p id="team-text" style={{ whiteSpace: "pre-wrap" }}>{teamImport}</p>
     </div>
   );
 }
