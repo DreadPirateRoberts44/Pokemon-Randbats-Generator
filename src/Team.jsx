@@ -123,6 +123,9 @@ function Team() {
           Generate Team
         </button>
       </div>
+      <div class="center">
+          <a href="https://play.pokemonshowdown.com/teambuilder" target="_blank">Go to Pokemon Showdown Teambuilder</a>
+      </div>
 
       <p class="import-text" style={{ whiteSpace: "pre-wrap" }}>{teamImport}</p>
     </div>
