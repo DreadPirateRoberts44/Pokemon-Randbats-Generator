@@ -9,21 +9,21 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-  # A workflow run is made up of one or more jobs that can be run sequentially or in parallel
-  jobs:
-    #a particular job
-    job-sample:
-      #type of environment/machine
-      runs-on: ubuntu-latest
+# A workflow run is made up of one or more jobs that can be run sequentially or in parallel
+jobs:
+  #a particular job
+  job-sample:
+    #type of environment/machine
+    runs-on: ubuntu-latest
 
-      steps:
-      - uses: actions/checkout@v3
+    steps:
+    - uses: actions/checkout@v3
 
-      - name: run a one-line script
-        run: echo Hello, world!
+    - name: run a one-line script
+      run: echo Hello, world!
 
-      - name: run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project
+    - name: run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project
 
